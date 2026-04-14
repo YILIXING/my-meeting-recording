@@ -283,3 +283,73 @@ footer {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Navigation */
+.nav {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-logo {
+    color: white;
+    font-size: 1.3em;
+    font-weight: 700;
+    padding: 18px 0;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    padding: 18px 20px;
+    display: block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.nav-item a:hover,
+.nav-item a.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-item a.active {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* Responsive navigation */
+@media (max-width: 600px) {
+    .nav {
+        flex-direction: column;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .nav-item a {
+        padding: 12px 16px;
+        font-size: 0.95em;
+    }
+}

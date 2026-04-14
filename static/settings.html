@@ -3,34 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API设置 - My Meeting Recording</title>
+    <title>设置 - My Meeting Recording</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <style>
-        .settings-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .settings-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .settings-content {
-            padding: 40px;
-        }
-
         .config-section {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding: 25px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
         }
 
         .config-section h3 {
@@ -40,37 +21,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .service-icon {
-            font-size: 1.2em;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #888;
-            font-size: 0.9em;
         }
 
         .btn-group {
@@ -83,50 +33,48 @@
             background: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         .btn-validate:hover {
             background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
         .validation-result {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 6px;
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
             display: none;
+            font-weight: 500;
         }
 
         .validation-result.success {
             background: #d4edda;
             color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .validation-result.error {
             background: #f8d7da;
             color: #721c24;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
+            border: 1px solid #f5c6cb;
         }
 
         .api-status {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-size: 0.85em;
             font-weight: 500;
-            margin-left: 10px;
+            margin-left: auto;
         }
 
         .api-status.configured {
@@ -138,21 +86,27 @@
             background: #f8d7da;
             color: #721c24;
         }
+
+        .config-section h3 {
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
-    <div class="container settings-container">
-        <div class="settings-header">
-            <h1>⚙️ API设置</h1>
-            <p>配置AI服务以使用会议转写和纪要生成功能</p>
-        </div>
+    <div class="container">
+        <nav class="nav">
+            <a href="/static/index.html" class="nav-logo">📝 My Meeting Recording</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/static/index.html">上传录音</a></li>
+                <li class="nav-item"><a href="/static/history.html">历史记录</a></li>
+                <li class="nav-item"><a href="/static/settings.html" class="active">设置</a></li>
+            </ul>
+        </nav>
 
-        <div class="settings-content">
-            <a href="/static/index.html" class="back-link">← 返回首页</a>
-
+        <main>
             <!-- Default Service Selection -->
-            <div class="config-section">
-                <h3>默认LLM服务</h3>
+            <section class="config-section">
+                <h3>⚙️ 默认LLM服务</h3>
                 <form id="defaultServiceForm">
                     <div class="form-group">
                         <label for="defaultService">选择默认服务</label>
@@ -167,13 +121,12 @@
                     </div>
                     <button type="submit">保存设置</button>
                 </form>
-            </div>
+            </section>
 
             <!-- Doubao Configuration -->
-            <div class="config-section">
+            <section class="config-section">
                 <h3>
-                    <span class="service-icon">🔷</span>
-                    豆包（火山引擎）
+                    <span>🔷 豆包（火山引擎）</span>
                     <span id="doubaoStatus" class="api-status">检查中...</span>
                 </h3>
                 <form id="doubaoForm">
@@ -198,11 +151,15 @@
                     </div>
                     <div id="doubaoValidation" class="validation-result"></div>
                 </form>
-            </div>
+            </section>
 
             <!-- Other services can be added similarly -->
 
-        </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 My Meeting Recording | Powered by AI</p>
+        </footer>
     </div>
 
     <script src="/static/js/app.js"></script>
