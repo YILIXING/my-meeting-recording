@@ -34,7 +34,9 @@ def get_db(db_path: str = Depends(get_db_path)) -> Generator[sqlite3.Connection,
     # Ensure database directory exists
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
-    conn = sqlite3.connect(db_path)
+    # Connect with check_same_thread=False for FastAPI multi-threaded environment
+    conn = sqlite3.connect(db_path, check_same_thread=False)
+    conn.row_factory = sqlite3.Row  # Enable column access by name
     try:
         yield conn
         conn.commit()
