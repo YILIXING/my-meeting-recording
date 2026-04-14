@@ -3,27 +3,39 @@
     "default_service": "doubao",
     "services": {
       "doubao": {
+        "name": "豆包（火山引擎）",
+        "protocol": "openai",
         "api_key": "your_doubao_api_key_here",
-        "app_id": "your_doubao_app_id_here",
         "model": "doubao-pro-4k",
-        "endpoint": "https://ark.cn-beijing.volces.com/api/v3"
+        "endpoint": "https://ark.cn-beijing.volces.com/api/v3",
+        "extra": {
+          "app_id": "your_doubao_app_id_here"
+        }
       },
       "qianwen": {
+        "name": "千问（阿里云）",
+        "protocol": "openai",
         "api_key": "your_qianwen_api_key_here",
         "model": "qwen-max",
-        "endpoint": "https://dashscope.aliyuncs.com/api/v1"
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1"
       },
       "claude": {
+        "name": "Claude（Anthropic）",
+        "protocol": "anthropic",
         "api_key": "your_claude_api_key_here",
         "model": "claude-3-5-sonnet-20241022",
         "endpoint": "https://api.anthropic.com"
       },
       "openai": {
+        "name": "OpenAI（GPT）",
+        "protocol": "openai",
         "api_key": "your_openai_api_key_here",
         "model": "gpt-4o-audio-preview",
         "endpoint": "https://api.openai.com/v1"
       },
       "zhipuai": {
+        "name": "智谱GLM",
+        "protocol": "openai",
         "api_key": "your_zhipuai_api_key_here",
         "model": "glm-4",
         "endpoint": "https://open.bigmodel.cn/api/paas/v4"

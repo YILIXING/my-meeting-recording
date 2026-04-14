@@ -20,7 +20,7 @@
             font-size: 1.3em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
         }
 
         .btn-group {
@@ -74,7 +74,6 @@
             border-radius: 12px;
             font-size: 0.85em;
             font-weight: 500;
-            margin-left: auto;
         }
 
         .api-status.configured {
@@ -87,8 +86,23 @@
             color: #721c24;
         }
 
-        .config-section h3 {
-            justify-content: space-between;
+        .protocol-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .protocol-openai {
+            background: #10a37f;
+            color: white;
+        }
+
+        .protocol-anthropic {
+            background: #d97757;
+            color: white;
         }
     </style>
 </head>
@@ -123,37 +137,11 @@
                 </form>
             </section>
 
-            <!-- Doubao Configuration -->
-            <section class="config-section">
-                <h3>
-                    <span>🔷 豆包（火山引擎）</span>
-                    <span id="doubaoStatus" class="api-status">检查中...</span>
-                </h3>
-                <form id="doubaoForm">
-                    <div class="form-group">
-                        <label for="doubaoApiKey">API Key</label>
-                        <input type="password" id="doubaoApiKey" name="api_key" placeholder="输入豆包API Key">
-                        <small>在<a href="https://console.volcengine.com/ark" target="_blank">火山引擎控制台</a>获取</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="doubaoAppId">App ID</label>
-                        <input type="text" id="doubaoAppId" name="app_id" placeholder="输入豆包ARK App ID">
-                        <small>用于音频转写功能（可选）</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="doubaoModel">模型</label>
-                        <input type="text" id="doubaoModel" name="model" value="doubao-pro-4k">
-                        <small>可选：doubao-pro-4k, doubao-pro-32k</small>
-                    </div>
-                    <div class="btn-group">
-                        <button type="submit">保存配置</button>
-                        <button type="button" class="btn-validate" onclick="validateService('doubao')">验证配置</button>
-                    </div>
-                    <div id="doubaoValidation" class="validation-result"></div>
-                </form>
-            </section>
-
-            <!-- Other services can be added similarly -->
+            <!-- Service Configurations Container -->
+            <div id="servicesContainer">
+                <!-- Service forms will be dynamically generated here -->
+                <p style="text-align: center; color: #888;">加载中...</p>
+            </div>
 
         </main>
 

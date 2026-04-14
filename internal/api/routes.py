@@ -318,8 +318,11 @@ async def get_llm_config():
         services_info = {}
         for service_name, service_config in llm_config.get("services", {}).items():
             services_info[service_name] = {
+                "name": service_config.get("name", service_name),
+                "protocol": service_config.get("protocol", "openai"),
                 "model": service_config.get("model", ""),
-                "configured": config_manager.is_service_configured(service_name)
+                "endpoint": service_config.get("endpoint", ""),
+                "configured": bool(service_config.get("api_key"))
             }
 
         return {
@@ -335,22 +338,93 @@ async def get_llm_config():
         }
 
 
+@router.get("/config/llm/full")
+async def get_llm_config_full():
+    """Get full LLM configuration (including sensitive data for editing)."""
+    config_manager = ConfigManager()
+
+    try:
+        config = config_manager.load()
+        return config
+    except FileNotFoundError:
+        return {"llm": {"services": {}}}
+
+
 @router.put("/config/llm")
 async def update_llm_config(request: dict):
-    """Update LLM service configuration."""
+    """Update LLM service configuration with new universal format."""
     service_name = request.get("service")
+    protocol = request.get("protocol")
     api_key = request.get("api_key")
-    app_id = request.get("app_id")
+    endpoint = request.get("endpoint")
     model = request.get("model")
+    extra = request.get("extra", {})
 
     if not service_name:
+        raise HTTPException(status_code=400, detail="Service name is required")
+
+    if not protocol:
+        raise HTTPException(status_code=400, detail="Protocol is required")
+
+    if not api_key:
+        raise HTTPException(status_code=400, detail="API key is required")
+
+    if not model:
+        raise HTTPException(status_code=400, detail="Model ID is required")
+
+    config_manager = ConfigManager()
+
+    try:
+        config = config_manager.load()
+    except FileNotFoundError:
+        config = {"llm": {"default_service": "doubao", "services": {}}}
+
+    # Ensure services dict exists
+    if "llm" not in config:
+        config["llm"] = {}
+    if "services" not in config["llm"]:
+        config["llm"]["services"] = {}
+
+    # Get preset name if available
+    presets = {
+        "doubao": "豆包（火山引擎）",
+        "qianwen": "千问（阿里云）",
+        "claude": "Claude（Anthropic）",
+        "openai": "OpenAI（GPT）",
+        "zhipuai": "智谱GLM"
+    }
+
+    # Update service configuration
+    config["llm"]["services"][service_name] = {
+        "name": presets.get(service_name, service_name),
+        "protocol": protocol,
+        "api_key": api_key,
+        "model": model,
+        "endpoint": endpoint
+    }
+
+    # Add extra fields if present
+    if extra:
+        config["llm"]["services"][service_name]["extra"] = extra
+
+    # Save configuration
+    config_manager.save(config)
+    return {"message": "Configuration updated successfully"}
+
+
+@router.put("/config/llm/default")
+async def set_default_service(request: dict):
+    """Set default LLM service."""
+    service = request.get("service")
+
+    if not service:
         raise HTTPException(status_code=400, detail="Service name is required")
 
     config_manager = ConfigManager()
 
     try:
-        config_manager.update_llm_service(service_name, api_key, app_id, model)
-        return {"message": "Configuration updated successfully"}
+        config_manager.set_default_service(service)
+        return {"message": "Default service updated successfully"}
     except Exception as err:
         raise HTTPException(status_code=500, detail=str(err))
 

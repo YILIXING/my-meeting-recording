@@ -4,8 +4,7 @@ import json
 from pathlib import Path
 from typing import Optional
 from internal.llm.base import LLMService
-from internal.llm.doubao import DoubaoLLM
-from internal.llm.doubao_enhanced import DoubaoLLM as DoubaoLLMEnhanced
+from internal.llm.universal import UniversalLLM
 from internal.utils.error import LLMConfigError
 
 
@@ -51,28 +50,28 @@ def create_llm_service(
 
     service_config = services[service_name]
 
-    # Create service instance
-    if service_name == "doubao":
-        # Use enhanced version if app_id is configured
-        app_id = service_config.get("app_id")
-        if app_id:
-            return DoubaoLLMEnhanced(
-                api_key=service_config.get("api_key", ""),
-                model=service_config.get("model", "doubao-pro-4k"),
-                endpoint=service_config.get("endpoint"),
-                app_id=app_id
-            )
-        else:
-            return DoubaoLLM(
-                api_key=service_config.get("api_key", ""),
-                model=service_config.get("model", "doubao-pro-4k"),
-                endpoint=service_config.get("endpoint")
-            )
-    # Add other services as needed
-    # elif service_name == "qianwen":
-    #     return QianwenLLM(...)
-    else:
-        raise LLMConfigError(f"LLM service '{service_name}' not implemented")
+    # Extract common parameters
+    protocol = service_config.get("protocol", "openai")
+    api_key = service_config.get("api_key", "")
+    model = service_config.get("model", "")
+    endpoint = service_config.get("endpoint")
+    extra = service_config.get("extra", {})
+
+    # Validate required fields
+    if not api_key:
+        raise LLMConfigError(f"API key is required for service '{service_name}'")
+
+    if not model:
+        raise LLMConfigError(f"Model ID is required for service '{service_name}'")
+
+    # Create universal LLM client
+    return UniversalLLM(
+        api_key=api_key,
+        protocol=protocol,
+        model=model,
+        endpoint=endpoint,
+        extra=extra
+    )
 
 
 def validate_llm_config(config_path: Optional[str] = None) -> bool:
@@ -99,3 +98,4 @@ def validate_llm_config(config_path: Optional[str] = None) -> bool:
         return asyncio.run(_validate())
     except Exception as err:
         raise LLMConfigError(f"LLM configuration validation failed: {err}") from err
+
