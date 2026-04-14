@@ -1,0 +1,41 @@
+{
+  "llm": {
+    "default_service": "doubao",
+    "services": {
+      "doubao": {
+        "api_key": "your_doubao_api_key_here",
+        "app_id": "your_doubao_app_id_here",
+        "model": "doubao-pro-4k",
+        "endpoint": "https://ark.cn-beijing.volces.com/api/v3"
+      },
+      "qianwen": {
+        "api_key": "your_qianwen_api_key_here",
+        "model": "qwen-max",
+        "endpoint": "https://dashscope.aliyuncs.com/api/v1"
+      },
+      "claude": {
+        "api_key": "your_claude_api_key_here",
+        "model": "claude-3-5-sonnet-20241022",
+        "endpoint": "https://api.anthropic.com"
+      },
+      "openai": {
+        "api_key": "your_openai_api_key_here",
+        "model": "gpt-4o-audio-preview",
+        "endpoint": "https://api.openai.com/v1"
+      },
+      "zhipuai": {
+        "api_key": "your_zhipuai_api_key_here",
+        "model": "glm-4",
+        "endpoint": "https://open.bigmodel.cn/api/paas/v4"
+      }
+    }
+  },
+  "audio": {
+    "max_file_size_mb": 300,
+    "supported_formats": [".mp3", ".m4a", ".wav", ".webm", ".mp4", ".mpeg"],
+    "auto_cleanup_days": 7
+  },
+  "database": {
+    "path": "data/meetings.db"
+  }
+}

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API设置 - My Meeting Recording</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .settings-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .settings-content {
+            padding: 40px;
+        }
+
+        .config-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .config-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-icon {
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-validate {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-validate:hover {
+            background: #218838;
+        }
+
+        .validation-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .validation-result.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .validation-result.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .api-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .api-status.configured {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .api-status.not-configured {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container settings-container">
+        <div class="settings-header">
+            <h1>⚙️ API设置</h1>
+            <p>配置AI服务以使用会议转写和纪要生成功能</p>
+        </div>
+
+        <div class="settings-content">
+            <a href="/static/index.html" class="back-link">← 返回首页</a>
+
+            <!-- Default Service Selection -->
+            <div class="config-section">
+                <h3>默认LLM服务</h3>
+                <form id="defaultServiceForm">
+                    <div class="form-group">
+                        <label for="defaultService">选择默认服务</label>
+                        <select id="defaultService" name="service">
+                            <option value="doubao">豆包（推荐）</option>
+                            <option value="qianwen">千问</option>
+                            <option value="claude">Claude</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="zhipuai">智谱GLM</option>
+                        </select>
+                        <small>选择用于转写和纪要生成的默认AI服务</small>
+                    </div>
+                    <button type="submit">保存设置</button>
+                </form>
+            </div>
+
+            <!-- Doubao Configuration -->
+            <div class="config-section">
+                <h3>
+                    <span class="service-icon">🔷</span>
+                    豆包（火山引擎）
+                    <span id="doubaoStatus" class="api-status">检查中...</span>
+                </h3>
+                <form id="doubaoForm">
+                    <div class="form-group">
+                        <label for="doubaoApiKey">API Key</label>
+                        <input type="password" id="doubaoApiKey" name="api_key" placeholder="输入豆包API Key">
+                        <small>在<a href="https://console.volcengine.com/ark" target="_blank">火山引擎控制台</a>获取</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="doubaoAppId">App ID</label>
+                        <input type="text" id="doubaoAppId" name="app_id" placeholder="输入豆包ARK App ID">
+                        <small>用于音频转写功能（可选）</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="doubaoModel">模型</label>
+                        <input type="text" id="doubaoModel" name="model" value="doubao-pro-4k">
+                        <small>可选：doubao-pro-4k, doubao-pro-32k</small>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit">保存配置</button>
+                        <button type="button" class="btn-validate" onclick="validateService('doubao')">验证配置</button>
+                    </div>
+                    <div id="doubaoValidation" class="validation-result"></div>
+                </form>
+            </div>
+
+            <!-- Other services can be added similarly -->
+
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/settings.js"></script>
+</body>
+</html>
