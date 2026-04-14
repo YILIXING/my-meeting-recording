@@ -158,24 +158,49 @@ async function loadRecentMeetings() {
 
     try {
         const response = await fetch(`${API_BASE}/meetings`);
+
+        if (!response.ok) {
+            throw new Error(`服务器返回错误: ${response.status}`);
+        }
+
         const meetings = await response.json();
 
+        if (!Array.isArray(meetings)) {
+            throw new Error('返回数据格式错误');
+        }
+
         if (meetings.length === 0) {
-            container.innerHTML = '<p style="text-align:center;color:#888;padding:40px;">暂无会议记录</p>';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📁</div>
+                    <h3>还没有会议记录</h3>
+                    <p>上传您的第一个会议录音开始使用吧！</p>
+                </div>
+            `;
             return;
         }
 
         container.innerHTML = meetings.slice(0, 5).map(meeting => `
-            <div class="meeting-card status-${meeting.status}">
-                <h3>${escapeHtml(meeting.title)}</h3>
-                <p>
-                    📅 ${formatDate(meeting.created_at)} |
-                    ${getStatusWithIcon(meeting.status)}
-                </p>
-            </div>
+            <a href="/static/detail.html?id=${meeting.id}" class="meeting-card-link">
+                <div class="meeting-card status-${meeting.status}">
+                    <h3>${escapeHtml(meeting.title)}</h3>
+                    <p>
+                        📅 ${formatDate(meeting.created_at)} |
+                        ${getStatusWithIcon(meeting.status)}
+                    </p>
+                </div>
+            </a>
         `).join('');
     } catch (error) {
-        container.innerHTML = '<p style="text-align:center;color:#f44336;">加载失败</p>';
+        console.error('加载会议失败:', error);
+        container.innerHTML = `
+            <div class="error-state">
+                <div class="error-icon">⚠️</div>
+                <h3>加载失败</h3>
+                <p>${escapeHtml(error.message)}</p>
+                <button onclick="loadRecentMeetings()" class="btn-retry">重试</button>
+            </div>
+        `;
     }
 }
 

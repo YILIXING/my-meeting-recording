@@ -284,6 +284,89 @@ footer {
     100% { transform: rotate(360deg); }
 }
 
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.empty-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.empty-state p {
+    color: #888;
+    font-size: 0.95em;
+}
+
+/* Error state */
+.error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #f44336;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.error-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+}
+
+.error-state h3 {
+    color: #d32f2f;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.error-state p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+
+.btn-retry {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+}
+
+/* Meeting card link */
+.meeting-card-link {
+    text-decoration: none;
+    display: block;
+}
+
+.meeting-card-link .meeting-card {
+    transition: all 0.3s ease;
+}
+
+.meeting-card-link:hover .meeting-card {
+    transform: translateX(8px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
 /* Navigation */
 .nav {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
