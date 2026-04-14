@@ -5,10 +5,11 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.12+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
+![UV](https://img.shields.io/badge/uv-compatible-brightgreen.svg)
 
 **AI-Powered Meeting Transcription and Summary Generation Tool**
 
-[Features](#features) • [Installation](#installation) • [Configuration](#configuration) • [Usage](#usage) • [API](#api-docs) • [Development](#development)
+[Features](#features) • [Installation](#installation) • [Configuration](#configuration) • [Usage](#usage) • [API](#api-documentation) • [Development](#development)
 
 </div>
 
@@ -45,6 +46,7 @@
 - **Flexible Export**: Export summaries in Markdown or TXT format
 - **Self-Hosted**: Full control over your data with local deployment
 - **Cost Effective**: Use your preferred LLM provider (Doubao, Qianwen, Claude, OpenAI, etc.)
+- **Fast Setup**: Get running in minutes with uv package manager
 
 ---
 
@@ -101,6 +103,13 @@ Vanilla JS       ← No framework dependencies
 Fetch API        ← HTTP requests
 ```
 
+### Package Management
+
+```
+uv (Recommended) ← Fast Python package manager
+pip (Fallback)   ← Traditional Python package manager
+```
+
 ### AI Services
 
 ```
@@ -124,7 +133,7 @@ SQLite      ← Database with migrations
 ## Prerequisites
 
 - **Python**: 3.12 or higher
-- **pip**: Python package manager
+- **uv**: (Recommended) Fast Python package manager - [Install UV](https://github.com/astral-sh/uv#installing)
 - **Disk Space**: At least 1GB free space (for audio storage)
 - **API Key**: Doubao API key (get yours at [console.volcengine.com/ark](https://console.volcengine.com/ark))
 
@@ -132,65 +141,88 @@ SQLite      ← Database with migrations
 
 ## Installation
 
-### Quick Start (Recommended)
+### Method 1: Using UV (Recommended)
+
+UV is an extremely fast Python package manager written in Rust. It's 10-100x faster than pip and creates isolated virtual environments automatically.
+
+#### Step 1: Install UV
+
+```bash
+# On macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or with pip
+pip install uv
+```
+
+#### Step 2: Clone and Setup
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/my-meeting-recording.git
+git clone https://github.com/YILIXING/my-meeting-recording.git
 cd my-meeting-recording
 
-# 2. Install the package and dependencies
-pip install -e .
+# 2. Install with uv (creates virtual environment automatically)
+make uv-install
 
-# 3. Install optional dependencies (for Phase 3 features)
-pip install aiohttp schedule
+# Or manually:
+# uv venv                      # Create virtual environment
+# uv pip install -e ".[dev,llm,scheduler]"  # Install all dependencies
 
-# 4. Run database migrations
+# 3. Run database migrations
+uv run python scripts/migrate.py
+
+# 4. Initialize preset templates
+uv run python scripts/init_templates.py
+
+# 5. Start the server
+make uv-run
+# Or: uv run python main.py
+```
+
+#### Step 3: Configure API
+
+```bash
+cp config.example.json config.json
+# Edit config.json with your API credentials
+```
+
+### Method 2: Using Traditional pip
+
+If you prefer the traditional approach or cannot use uv:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/YILIXING/my-meeting-recording.git
+cd my-meeting-recording
+
+# 2. Install dependencies
+pip install -e ".[dev,llm,scheduler]"
+
+# 3. Run database migrations
 python scripts/migrate.py
 
-# 5. Initialize preset templates
+# 4. Initialize preset templates
 python scripts/init_templates.py
 
-# 6. Start the server
+# 5. Start the server
 make web
+# Or: python main.py
 ```
 
-### Step-by-Step Installation
-
-#### 1. System Requirements
-
-Ensure you have Python 3.12+ installed:
+### Verify Installation
 
 ```bash
-python --version
-# Output should be: Python 3.12.x or higher
-```
+# Using uv
+make uv-test
+# Or: uv run pytest tests/ -v
 
-#### 2. Install Dependencies
-
-```bash
-# Core dependencies
-pip install -e .
-
-# For enhanced features (recommended)
-pip install -e ".[scheduler]"
-```
-
-#### 3. Database Setup
-
-```bash
-# Run migrations
-python scripts/migrate.py
-
-# Initialize templates
-python scripts/init_templates.py
-```
-
-#### 4. Verify Installation
-
-```bash
-# Run verification script
-python scripts/simple_verify.py
+# Using pip
+make test
+# Or: pytest tests/ -v
 ```
 
 ---
@@ -263,11 +295,23 @@ You can configure multiple LLM services in `config.json`:
 
 ### Starting the Application
 
+#### With UV (Recommended)
+
 ```bash
-# Using Make (recommended)
+# Using Makefile
+make uv-run
+
+# Or directly
+uv run python main.py
+```
+
+#### With pip
+
+```bash
+# Using Makefile
 make web
 
-# Or directly with Python
+# Or directly
 python main.py
 ```
 
@@ -315,20 +359,20 @@ Access the application through your browser:
 # Show all available commands
 make help
 
-# Run tests
-make test
+# UV commands (recommended)
+make uv-install    # Install with uv
+make uv-sync       # Sync dependencies
+make uv-run        # Run application
+make uv-test       # Run tests
 
-# Start web server
-make web
-
-# Clean up old audio files
-make cleanup
-
-# Run migrations
-make migrate
-
-# Format code
-make lint
+# Traditional commands
+make install-all   # Install all dependencies
+make web           # Start web server
+make test          # Run all tests
+make test-cov      # Run tests with coverage
+make cleanup       # Clean up old audio files
+make migrate       # Run migrations
+make clean         # Clean temporary files
 ```
 
 ---
@@ -414,6 +458,7 @@ curl http://localhost:8000/api/summaries/{summary_id}/export?format=markdown \
 
 ```
 my-meeting-recording/
+├── .venv/                       ← UV virtual environment (auto-created)
 ├── config.example.json          # Configuration template
 ├── pyproject.toml               # Project dependencies
 ├── Makefile                     # Build commands
@@ -445,13 +490,46 @@ my-meeting-recording/
     └── js/
 ```
 
-### Development Setup
+### Development Setup with UV
 
 ```bash
-# Install development dependencies
+# 1. Clone and navigate
+git clone https://github.com/YILIXING/my-meeting-recording.git
+cd my-meeting-recording
+
+# 2. Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 3. Create virtual environment and install dependencies
+make uv-install
+
+# 4. Activate the virtual environment (optional)
+source .venv/bin/activate  # On macOS/Linux
+# Or: .venv\Scripts\activate  # On Windows
+
+# 5. Run tests
+make uv-test
+
+# 6. Start development server
+make uv-run
+```
+
+### Development Setup with pip
+
+```bash
+# 1. Clone and navigate
+git clone https://github.com/YILIXING/my-meeting-recording.git
+cd my-meeting-recording
+
+# 2. Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On macOS/Linux
+# Or: .venv\Scripts\activate  # On Windows
+
+# 3. Install development dependencies
 pip install -e ".[dev]"
 
-# Enable pre-commit hooks (if configured)
+# 4. Enable pre-commit hooks (if configured)
 pip install pre-commit
 pre-commit install
 ```
@@ -463,7 +541,7 @@ pre-commit install
 3. **Implement Feature**: Add code in `internal/`
 4. **Update API**: Add routes in `internal/api/routes.py`
 5. **Update Frontend**: Modify files in `static/`
-6. **Run Tests**: `make test`
+6. **Run Tests**: `make test` or `make uv-test`
 7. **Commit**: Follow Conventional Commits format
 
 ### Code Style
@@ -480,15 +558,22 @@ pre-commit install
 
 ### Run All Tests
 
-```bash
-# Using Make
-make test
+#### With UV
 
-# Or with pytest
-pytest
+```bash
+make uv-test
+# Or: uv run pytest tests/ -v
+```
+
+#### With pip
+
+```bash
+make test
+# Or: pytest tests/ -v
 
 # With coverage
-pytest --cov=internal --cov-report=html
+make test-cov
+# Or: pytest --cov=internal --cov-report=html
 ```
 
 ### Test Structure
@@ -550,7 +635,25 @@ pytest -x
 
 ### Deployment Options
 
-#### Option 1: Direct Deployment
+#### Option 1: UV Deployment (Recommended)
+
+```bash
+# Set environment variables
+export ENVIRONMENT=production
+export DATABASE_URL=postgresql://user:pass@host/db
+
+# Install with uv
+uv venv
+uv pip install -e ".[llm,scheduler]"
+
+# Run migrations
+uv run python scripts/migrate.py
+
+# Start with production server
+uv run uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+#### Option 2: Traditional Deployment
 
 ```bash
 # Set environment variables
@@ -558,7 +661,7 @@ export ENVIRONMENT=production
 export DATABASE_URL=postgresql://user:pass@host/db
 
 # Install dependencies
-pip install -e ".[scheduler]"
+pip install -e ".[llm,scheduler]"
 
 # Run migrations
 python scripts/migrate.py
@@ -567,7 +670,7 @@ python scripts/migrate.py
 uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-#### Option 2: Docker Deployment
+#### Option 3: Docker Deployment
 
 ```dockerfile
 # Example Dockerfile
@@ -576,7 +679,9 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY . .
 
-RUN pip install -e ".[scheduler]"
+# Install uv for faster dependency installation
+RUN pip install uv
+RUN uv pip install --system -e ".[llm,scheduler]"
 
 EXPOSE 8000
 
@@ -589,7 +694,7 @@ docker build -t my-meeting-recording .
 docker run -p 8000:8000 -v $(pwd)/data:/app/data my-meeting-recording
 ```
 
-#### Option 3: Systemd Service
+#### Option 4: Systemd Service
 
 ```ini
 # /etc/systemd/system/meeting-recording.service
@@ -601,7 +706,8 @@ After=network.target
 Type=simple
 User=www-data
 WorkingDirectory=/var/www/my-meeting-recording
-ExecStart=/usr/bin/python3 /var/www/my-meeting-recording/main.py
+Environment="PATH=/var/www/my-meeting-recording/.venv/bin"
+ExecStart=/var/www/my-meeting-recording/.venv/bin/python main.py
 Restart=always
 
 [Install]
@@ -614,7 +720,22 @@ WantedBy=multi-user.target
 
 ### Common Issues
 
-#### 1. API Configuration Error
+#### 1. UV Installation Failed
+
+```
+Error: uv command not found
+```
+
+**Solution**: Ensure uv is installed and in your PATH:
+```bash
+# Check uv installation
+which uv
+
+# Reinstall if needed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+#### 2. API Configuration Error
 
 ```
 Error: LLM service not configured
@@ -625,7 +746,7 @@ Error: LLM service not configured
 cat config.json | grep api_key
 ```
 
-#### 2. Database Migration Failed
+#### 3. Database Migration Failed
 
 ```
 Error: Database is locked
@@ -636,7 +757,7 @@ Error: Database is locked
 lsof data/meetings.db
 ```
 
-#### 3. Audio Upload Timeout
+#### 4. Audio Upload Timeout
 
 ```
 Error: Upload timeout
@@ -644,22 +765,28 @@ Error: Upload timeout
 
 **Solution**: Increase timeout in `internal/api/routes.py` or reduce file size.
 
-#### 4. Import Error for Optional Dependencies
+#### 5. Import Error for Optional Dependencies
 
 ```
 ModuleNotFoundError: No module named 'aiohttp'
 ```
 
-**Solution**: Install optional dependencies:
+**Solution** (with uv):
 ```bash
-pip install aiohttp schedule
+uv pip install -e ".[llm,scheduler]"
+```
+
+**Solution** (with pip):
+```bash
+pip install -e ".[llm,scheduler]"
 ```
 
 ### Getting Help
 
 - **Documentation**: Check `PROJECT_SUMMARY.md` for detailed implementation notes
-- **Issues**: Report bugs at [GitHub Issues](https://github.com/yourusername/my-meeting-recording/issues)
+- **Issues**: Report bugs at [GitHub Issues](https://github.com/YILIXING/my-meeting-recording/issues)
 - **Constitution**: Read `constitution.md` to understand project principles
+- **UV Documentation**: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
 
 ---
 
@@ -669,12 +796,12 @@ We welcome contributions! Please follow these guidelines:
 
 ### Contribution Workflow
 
-1. Fork the repository
+1. Fork the repository from [github.com/YILIXING/my-meeting-recording](https://github.com/YILIXING/my-meeting-recording)
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Follow the project constitution (`constitution.md`)
 4. Write tests first (TDD)
 5. Implement your feature
-6. Run tests (`make test`)
+6. Run tests (`make uv-test` or `make test`)
 7. Commit with Conventional Commits format
 8. Push to your branch (`git push origin feature/amazing-feature`)
 9. Open a Pull Request
@@ -712,6 +839,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
 - [SQLite](https://www.sqlite.org/) - Reliable database
 - [Doubao](https://www.doubao.com/) - AI transcription service
+- [UV](https://github.com/astral-sh/uv) - Fast Python package manager
 
 ### Inspired By
 
@@ -723,6 +851,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - The Python community for excellent documentation
 - FastAPI creators for the amazing framework
+- UV team for the blazing-fast package manager
 - All contributors and testers
 
 ---
@@ -738,6 +867,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 18 API endpoints
 - 4 frontend pages
 - Full documentation
+- UV package manager support
 
 ---
 
@@ -745,6 +875,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the My Meeting Recording Team**
 
-[Website](https://yourwebsite.com) • [Documentation](https://docs.yourwebsite.com) • [Support](mailto:support@yourwebsite.com)
+**Repository**: [github.com/YILIXING/my-meeting-recording](https://github.com/YILIXING/my-meeting-recording)
 
 </div>
